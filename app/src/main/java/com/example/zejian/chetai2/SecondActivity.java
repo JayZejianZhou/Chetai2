@@ -120,43 +120,52 @@ public class SecondActivity extends AppCompatActivity{
 
 
         mRecorder= new MediaRecorder();
+        //mRecorder.setAudioChannels(1);//set to mono
+       // mRecorder.setAudioSamplingRate(8000);
         mRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
         mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         mRecorder.setOutputFile(mFileName);
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-
         try{
             mRecorder.prepare();
         }catch (IOException e){
             Log.e(LOG_TAG, "prepare() failed");
         }
+        Log.e(LOG_TAG,"test if log error occur");
+        if(!mAudioManager.isBluetoothScoAvailableOffCall()){
+            Log.i(LOG_TAG,"does not support BL --ZZ");
+            return;
+        }
 
 
-        mAudioManager.stopBluetoothSco();
+//        mAudioManager.stopBluetoothSco();
         mAudioManager.startBluetoothSco();//蓝牙录音的关键，启动SCO连接，耳机话筒才起作用
 
         registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                Log.e(LOG_TAG,"detected the intent (ZZ)");
                 int state = intent.getIntExtra(AudioManager.EXTRA_SCO_AUDIO_STATE, -1);
 
                 if (AudioManager.SCO_AUDIO_STATE_CONNECTED == state) {
-                    Log.i(LOG_TAG, "AudioManager.SCO_AUDIO_STATE_CONNECTED");
+                    Log.e(LOG_TAG, "AudioManager.SCO_AUDIO_STATE_CONNECTED");
                     mAudioManager.setBluetoothScoOn(true);  //打开SCO
-                    Log.i(LOG_TAG, "Routing:" + mAudioManager.isBluetoothScoOn());
+                    Log.e(LOG_TAG, "Routing:" + mAudioManager.isBluetoothScoOn());
                     mAudioManager.setMode(AudioManager.STREAM_MUSIC);
+
                     mRecorder.start();//开始录音
                     unregisterReceiver(this);  //别遗漏
-                }
- else {//等待一秒后再尝试启动SCO
-                    try {
-                        Thread.sleep(10000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    mAudioManager.startBluetoothSco();
-                    Log.i(LOG_TAG, "再次startBluetoothSco()");
+//                }
+//                else {//等待一秒后再尝试启动SCO
+//                    try {
+//                        Thread.sleep(10000);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                    mAudioManager.startBluetoothSco();
+//                    Log.i(LOG_TAG, "再次startBluetoothSco()");
 
+                    Log.e(LOG_TAG,"detected the flag in (ZZ)");
                 }
 
                 //test code to see if SCO connection state has been changed
@@ -169,21 +178,18 @@ public class SecondActivity extends AppCompatActivity{
         }, new IntentFilter(AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED));
 
 
-        mRecorder.start();
+//        mRecorder.start();
     }
 
     private void stopRecording(){
-//        if(mAudioManager.isBluetoothScoOn()){
-//            mAudioManager.setBluetoothScoOn(false);
-//            mAudioManager.stopBluetoothSco();
-//        }
-        mRecorder.stop();//Before stop, you should start first, otherwise it's gonna crash!!--ZZ
+        mRecorder.stop();
         mRecorder.release();
-        mRecorder = null;
-//        if (mAudioManager.isBluetoothScoOn()) {
-//            mAudioManager.setBluetoothScoOn(false);
-//            mAudioManager.stopBluetoothSco();
-//        }
+        mRecorder=null;
+        if(mAudioManager.isBluetoothScoOn()){
+            mAudioManager.setBluetoothScoOn(false);
+            mAudioManager.stopBluetoothSco();
+        }
+
     }
 
     class RecordButton extends Button{
