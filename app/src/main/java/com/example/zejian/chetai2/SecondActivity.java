@@ -54,21 +54,6 @@ public class SecondActivity extends AppCompatActivity{
     private boolean permissionToRecordAccepted =false;
     private String [] permissions = {Manifest.permission.RECORD_AUDIO};
 
-    //self
-//    private BluetoothProfile.ServiceListener mProfileListener = new BluetoothProfile.ServiceListener(){
-//        public void onServiceConnected(int profile, BluetoothProfile proxy){
-//            if(profile == BluetoothProfile.HEADSET){
-//                mBluetoothHeadset = (BluetoothHeadset) proxy;
-//            }
-//        }
-//        public void onServiceDisconnected(int profile){
-//            if(profile == BluetoothProfile.HEADSET){
-//                mBluetoothHeadset = null;
-//            }
-//        }
-//
-//    };
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults){
         super.onRequestPermissionsResult(requestCode,permissions,grantResults);
@@ -97,8 +82,16 @@ public class SecondActivity extends AppCompatActivity{
         }
     }
 
-    private void startPlaying(){
+    private void startPlaying(){ //A2DP profile to play
         mPlayer = new MediaPlayer();
+
+//        //Establish A2DP connecttion
+      //  if(!mAudioManager.isBluetoothA2dpOn())
+       // mAudioManager.setBluetoothA2dpOn(true);
+        mAudioManager.stopBluetoothSco();
+        //mAudioManager.setStreamSolo(AudioManager.STREAM_MUSIC,true);
+        //mAudioManager.setRouting(AudioManager.MODE_NORMAL,AudioManager.ROUTE_BLUETOOTH_A2DP,AudioManager.ROUTE_BLUETOOTH);
+        //mAudioManager.setBluetoothScoOn(true);
         try{
             mPlayer.setDataSource(mFileName);
             mPlayer.prepare();
@@ -112,16 +105,13 @@ public class SecondActivity extends AppCompatActivity{
     private void stopPlaying(){
         mPlayer.release();
         mPlayer = null;
+        mAudioManager.setStreamSolo(AudioManager.STREAM_MUSIC,false);
     }
 
     private void startRecording(){
-        //Establish connection to the proxy
-    //    mBluetoothAdapter.getProfileProxy(this, mProfileListener, BluetoothProfile.HEADSET);
-
-
-        mRecorder= new MediaRecorder();
-        //mRecorder.setAudioChannels(1);//set to mono
-       // mRecorder.setAudioSamplingRate(8000);
+         mRecorder= new MediaRecorder();
+        mRecorder.setAudioChannels(1);//set to mono
+        mRecorder.setAudioSamplingRate(8000);
         mRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
         mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         mRecorder.setOutputFile(mFileName);
