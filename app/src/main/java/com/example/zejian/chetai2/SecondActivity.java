@@ -84,16 +84,18 @@ public class SecondActivity extends AppCompatActivity{
 
     private void startPlaying(){ //A2DP profile to play
         mPlayer = new MediaPlayer();
+        mAudioManager.setMode(AudioManager.MODE_IN_CALL);
 
 //        //Establish A2DP connecttion
       //  if(!mAudioManager.isBluetoothA2dpOn())
        // mAudioManager.setBluetoothA2dpOn(true);
-        mAudioManager.stopBluetoothSco();
+//        mAudioManager.stopBluetoothSco();
         //mAudioManager.setStreamSolo(AudioManager.STREAM_MUSIC,true);
         //mAudioManager.setRouting(AudioManager.MODE_NORMAL,AudioManager.ROUTE_BLUETOOTH_A2DP,AudioManager.ROUTE_BLUETOOTH);
         //mAudioManager.setBluetoothScoOn(true);
         try{
             mPlayer.setDataSource(mFileName);
+            mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mPlayer.prepare();
             mPlayer.start();
         }
@@ -105,7 +107,7 @@ public class SecondActivity extends AppCompatActivity{
     private void stopPlaying(){
         mPlayer.release();
         mPlayer = null;
-        mAudioManager.setStreamSolo(AudioManager.STREAM_MUSIC,false);
+//        mAudioManager.setStreamSolo(AudioManager.STREAM_MUSIC,false);
     }
 
     private void startRecording(){
@@ -144,8 +146,8 @@ public class SecondActivity extends AppCompatActivity{
                     mAudioManager.setMode(AudioManager.STREAM_MUSIC);
 
                     mRecorder.start();//开始录音
-                    unregisterReceiver(this);  //别遗漏
-//                }
+//                    unregisterReceiver(this);  //别遗漏
+                }
 //                else {//等待一秒后再尝试启动SCO
 //                    try {
 //                        Thread.sleep(10000);
@@ -154,9 +156,9 @@ public class SecondActivity extends AppCompatActivity{
 //                    }
 //                    mAudioManager.startBluetoothSco();
 //                    Log.i(LOG_TAG, "再次startBluetoothSco()");
-
-                    Log.e(LOG_TAG,"detected the flag in (ZZ)");
-                }
+//
+//                    Log.e(LOG_TAG,"detected the flag in (ZZ)");
+//                }
 
                 //test code to see if SCO connection state has been changed
 //                while(AudioManager.SCO_AUDIO_STATE_CONNECTED == state){
@@ -175,10 +177,10 @@ public class SecondActivity extends AppCompatActivity{
         mRecorder.stop();
         mRecorder.release();
         mRecorder=null;
-        if(mAudioManager.isBluetoothScoOn()){
-            mAudioManager.setBluetoothScoOn(false);
-            mAudioManager.stopBluetoothSco();
-        }
+//        if(mAudioManager.isBluetoothScoOn()){
+//            mAudioManager.setBluetoothScoOn(false);
+//            mAudioManager.stopBluetoothSco();
+//        }
 
     }
 
