@@ -6,29 +6,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.app.Activity;
 import android.media.AudioManager;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.media.MediaPlayer;
-import android.media.MediaPlayer;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
-
 import java.io.IOException;
-import java.security.PublicKey;
-
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothHeadset;
-import android.bluetooth.BluetoothProfile;
-
+import java.io.ByteArrayOutputStream;
+import java.net.Socket;
+import java.net.UnknownHostException;
 /**
  * Created by zejian on 10/18/2017.
  */
@@ -38,15 +29,11 @@ public class SecondActivity extends AppCompatActivity{
     private static final String LOG_TAG = "AudioRecordTest";
     private static final int REQUEST_RECORD_AUDIO_PERMISSION =200;
     private static String mFileName = null;
-
-    private RecordButton mRecordButton = null;
+    public boolean mStartRecording = true;
+    public boolean mStartPlaying = true;
     private MediaRecorder mRecorder= null;
 
-    private PlayButton mPlaybutton = null;
     private MediaPlayer mPlayer = null;
-
-    BluetoothHeadset mBluetoothHeadset;
-    BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
     private AudioManager mAudioManager = null;
 
@@ -184,52 +171,27 @@ public class SecondActivity extends AppCompatActivity{
 
     }
 
-    class RecordButton extends Button{
-        boolean mStartRecording = true;
-
-        OnClickListener clicker = new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onRecord(mStartRecording);
-                if(mStartRecording){
-                    setText("Stop recording");
-                }else{
-                    setText("Start recording");
-                }
-                mStartRecording =!mStartRecording;
-            }
-        };
-
-        public RecordButton(Context ctx){
-            super(ctx);
-            setText("Start Recording");
-            setOnClickListener(clicker);
+    public void record_button(View view) {
+        Button mButton=(Button)findViewById(R.id.record_button);
+        onRecord(mStartRecording);
+        if(mStartRecording){
+            mButton.setText("Stop recording");
+        }else{
+            mButton.setText("Start recording");
         }
-    }
+        mStartRecording =!mStartRecording;
+    };
 
-    //class PlayButton extends android.support.v7.widget.AppCompatButton{
-    class PlayButton extends Button{
-        boolean mStartPlaying = true;
-
-        OnClickListener clicker = new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onPlay(mStartPlaying);
-                if(mStartPlaying){
-                    setText("Stop Playing");
-                }else {
-                    setText("Start playing");
-                }
-                mStartPlaying =!mStartPlaying;
-            }
-        };
-
-        public PlayButton(Context ctx){
-            super(ctx);
-            setText("Start Playing");
-            setOnClickListener(clicker);
+    public void play_button(View view){
+        Button mButton=(Button)findViewById(R.id.play_button);
+        onPlay(mStartPlaying);
+        if(mStartPlaying){
+            mButton.setText("Stop playing");
+        }else{
+            mButton.setText("Start playing");
         }
-    }
+        mStartPlaying=!mStartPlaying;
+    };
 
     @Override
     public void onCreate(Bundle icicle){
@@ -242,23 +204,7 @@ public class SecondActivity extends AppCompatActivity{
 
         ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
 
-
-
-        LinearLayout ll = new LinearLayout(this);
-        mRecordButton = new RecordButton(this);
-        ll.addView(mRecordButton,
-                new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        0));
-        mPlaybutton = new PlayButton(this);
-        ll.addView(mPlaybutton,
-                new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        0
-                ));
-        setContentView(ll);
+        setContentView(R.layout.activity_second);
     }
 
     @Override
@@ -275,5 +221,13 @@ public class SecondActivity extends AppCompatActivity{
         }
         //close proxy
        // mBluetoothAdapter.closeProfileProxy(mBluetoothHeadset);
+    }
+
+    public void socket_connect(View view){
+
+    }
+
+    public void socket_disconnect(View view){
+
     }
 }
