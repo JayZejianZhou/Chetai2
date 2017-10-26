@@ -5,19 +5,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.zejian.chetai2.SecondActivity">
+    tools:context="com.example.zejian.chetai2.SecondActivity"
+    tools:layout_editor_absoluteY="81dp"
+    tools:layout_editor_absoluteX="0dp">
 
     <TextView
         android:id="@+id/sample"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="This is the second activity"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.761" />
+        tools:layout_constraintTop_creator="1"
+        android:layout_marginStart="14dp"
+        android:layout_marginTop="42dp"
+        app:layout_constraintTop_toBottomOf="@+id/button_connect"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintLeft_toRightOf="@+id/button_connect"
+        android:layout_marginLeft="14dp" />
 
     <Button
         android:id="@+id/record_button"
@@ -25,11 +28,11 @@
         android:layout_height="wrap_content"
         android:onClick="record_button"
         android:text="Start Recording"
-        tools:layout_constraintBottom_creator="1"
         android:layout_marginStart="16dp"
+        tools:layout_constraintBottom_creator="1"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:layout_constraintLeft_creator="1"
-        android:layout_marginBottom="34dp"
+        android:layout_marginBottom="36dp"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginLeft="16dp" />
 
@@ -39,105 +42,80 @@
         android:layout_height="wrap_content"
         android:onClick="play_button"
         android:text="Start Playing"
+        android:layout_marginEnd="16dp"
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintBottom_creator="1"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginEnd="16dp"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginBottom="35dp"
+        android:layout_marginBottom="37dp"
         android:layout_marginRight="16dp" />
 
     <EditText
-        android:id="@+id/text_ip"
+        android:id="@+id/editText_ip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="text"
-        android:text="Name"
-        tools:layout_constraintTop_creator="1"
+        app:layout_constraintBottom_toBottomOf="@+id/textView2"
+        app:layout_constraintLeft_toLeftOf="@+id/editText_port"
+        app:layout_constraintRight_toRightOf="@+id/editText_port"
+        app:layout_constraintTop_toTopOf="@+id/textView2"
+        tools:layout_constraintBottom_creator="1"
+        tools:layout_constraintLeft_creator="1"
         tools:layout_constraintRight_creator="1"
-        android:layout_marginEnd="55dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="42dp"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginRight="55dp" />
+        tools:layout_constraintTop_creator="1" />
 
     <TextView
         android:id="@+id/textView2"
-        android:layout_width="132dp"
+        android:layout_width="0dp"
         android:layout_height="43dp"
         android:text="IP Address"
-        app:layout_constraintRight_toLeftOf="@+id/text_ip"
-        tools:layout_constraintRight_creator="1"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="18dp"
-        app:layout_constraintBaseline_toBaselineOf="@+id/text_ip"
-        tools:layout_constraintBaseline_creator="1"
-        tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="18dp"
-        app:layout_constraintHorizontal_bias="0.0" />
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="port"
         tools:layout_constraintTop_creator="1"
         tools:layout_constraintBottom_creator="1"
-        app:layout_constraintBottom_toTopOf="@+id/button_connect"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="80dp"
+        app:layout_constraintBottom_toTopOf="@+id/textView"
+        android:layout_marginTop="43dp"
         tools:layout_constraintLeft_creator="1"
-        android:layout_marginBottom="81dp"
+        android:layout_marginBottom="35dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/text_ip"
-        android:layout_marginLeft="16dp" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/text_port"
+        android:id="@+id/editText_port"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="49dp"
+        android:layout_marginRight="49dp"
+        android:layout_marginTop="24dp"
         android:ems="10"
         android:inputType="number"
-        android:text="Name"
-        tools:layout_constraintTop_creator="1"
-        android:layout_marginStart="1dp"
-        android:layout_marginTop="38dp"
-        app:layout_constraintTop_toBottomOf="@+id/text_ip"
-        tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toLeftOf="@+id/text_ip"
-        android:layout_marginLeft="1dp" />
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editText_ip"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintTop_creator="1" />
 
     <Button
         android:id="@+id/button_connect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="socket_connect"
+        android:layout_marginStart="23dp"
+        android:onClick="button_connect_click"
         android:text="Connect"
-        tools:layout_constraintTop_creator="1"
         tools:layout_constraintBottom_creator="1"
-        android:layout_marginStart="32dp"
-        app:layout_constraintBottom_toBottomOf="@+id/button_disconnect"
+        app:layout_constraintBottom_toBottomOf="parent"
         tools:layout_constraintLeft_creator="1"
+        android:layout_marginBottom="199dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/button_disconnect"
-        android:layout_marginLeft="32dp"
-        app:layout_constraintVertical_bias="0.0" />
+        android:layout_marginLeft="23dp" />
 
-    <Button
-        android:id="@+id/button_disconnect"
+    <TextView
+        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="47dp"
-        android:layout_marginRight="47dp"
-        android:layout_marginTop="56dp"
-        android:onClick="socket_disconnect"
-        android:text="disconnect"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_port"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintTop_creator="1" />
+        android:text="Port"
+        tools:layout_constraintTop_creator="1"
+        android:layout_marginTop="121dp"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

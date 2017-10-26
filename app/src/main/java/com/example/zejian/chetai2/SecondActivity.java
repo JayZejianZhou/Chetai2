@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.MediaRecorder;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.media.MediaPlayer;
 import android.support.annotation.NonNull;
@@ -16,8 +17,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 /**
@@ -40,6 +45,12 @@ public class SecondActivity extends AppCompatActivity{
     //request permission to RECORD_AUDIO
     private boolean permissionToRecordAccepted =false;
     private String [] permissions = {Manifest.permission.RECORD_AUDIO};
+
+    //variables for socket connection
+    private TextView textResponse;
+    private EditText editTextAddress, editTextPort;
+    public boolean mConnect=true;
+    private Button Button_connect;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults){
@@ -205,6 +216,12 @@ public class SecondActivity extends AppCompatActivity{
         ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
 
         setContentView(R.layout.activity_second);
+//Get the connect widget
+        editTextAddress = (EditText)findViewById(R.id.editText_ip);
+        editTextPort = (EditText)findViewById(R.id.editText_port);
+        textResponse = (TextView)findViewById(R.id.sample);
+        Button_connect= (Button)findViewById((R.id.button_connect));
+
     }
 
     @Override
@@ -223,11 +240,60 @@ public class SecondActivity extends AppCompatActivity{
        // mBluetoothAdapter.closeProfileProxy(mBluetoothHeadset);
     }
 
-    public void socket_connect(View view){
-
+    public void button_connect_click(View view){
+        socket_connect(mConnect);
+        if(mConnect){
+            Button_connect.setText("Disconnect");
+        }
+        else{
+            Button_connect.setText("Connect");
+        }
+        mConnect=!mConnect;
     }
 
-    public void socket_disconnect(View view){
-
+    private void socket_connect(Boolean mConnect){
+        MyClientTask  myClientTask =  new MyClientTask(
+                editTextAddress.getText().toString(),
+                Integer.parseInt(editTextPort.getText().toString()));
+        myClientTask.execute();
     }
+
+    public class MyClientTask extends AsyncTask<Void, Void, Void>{
+        String dstAddress;
+        int dstPort;
+        String response;
+
+        MyClientTask(String addr, int port){
+            dstAddress = addr;
+            dstPort = port;
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0){
+            try{
+                Socket socket = new Socket(dstAddress,dstPort);
+                InputStream inputStream = socket.getInputStream();
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024);
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead= inputStream.read(buffer)) != -1){
+                    byteArrayOutputStream.write(buffer, 0, bytesRead);
+                }
+                socket.close();
+                response = byteArrayOutputStream.toString("UTF-8");
+            }catch (UnknownHostException e){
+                e.printStackTrace();
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result){
+            textResponse.setText(response);
+            super.onPostExecute(result);
+        }
+    }
+
 }
