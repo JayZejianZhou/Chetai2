@@ -1,5 +1,6 @@
 import socket
 import sys
+import time
 from thread import * 
 HOST = '' #meaning all available interface
 PORT = 8988 #arbitrary non-priviledged port
@@ -26,12 +27,22 @@ def clientthread(conn):
 	
 	while 1 :
 		
+		#confirm the connection-- refer to the document 2017/10/27
+		conn.send('C')
+		#delay to see if this works
+		time.sleep(5) #5 seconds
+		#send the record command
+		conn.send('R')
+		time.sleep(10)
+		conn.send('T')
+		'''
 		#recive from client 
 		data = conn.recv(1024)
 		reply = 'OK...'+ data
 		if not data:
 			break
 		conn.sendall(reply)
+		'''
 	
 	conn.close()
 
