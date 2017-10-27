@@ -1,9 +1,21 @@
 import socket
 import sys
 import time
-from thread import * 
+#from thread import * 
+import thread
+import RPi.GPIO as GPIO
 HOST = '' #meaning all available interface
-PORT = 8988 #arbitrary non-priviledged port
+PORT = 8888 #arbitrary non-priviledged port
+
+flag_record=False
+
+#set pin/key definition| high for yes, low for no
+record = 29 #Board pin, BCM GPIO 5
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(record, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+
+
+
 
 s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 print 'Socket Created'
@@ -23,18 +35,16 @@ print  'Socket now listening'
 
 #handling function
 def clientthread(conn):
-	conn.send('welcome to the server. Type something and hit enter\n')
+	#confirm the connection-- refer to the document 2017/10/27
+	conn.send('C')
 	
 	while 1 :
-		
-		#confirm the connection-- refer to the document 2017/10/27
-		conn.send('C')
-		#delay to see if this works
-		time.sleep(5) #5 seconds
-		#send the record command
-		conn.send('R')
-		time.sleep(10)
-		conn.send('T')
+		#test if recording
+		if flag_record:
+			conn.send('R') #let's record
+			while flag_record:
+				pass
+			conn.send('T') #srop record
 		'''
 		#recive from client 
 		data = conn.recv(1024)
@@ -45,13 +55,13 @@ def clientthread(conn):
 		'''
 	
 	conn.close()
+	
+conn, addr = s.accept()
 
-#now keep talking with the client 
+print 'Connect with ' + addr[0] + ':' +str(addr[1])
+thread.start_new_thread(clientthread, (conn,))
+
 while 1:
-	#wait to accept a connection - blocking call
-	conn, addr = s.accept()
-	print 'Connect with ' + addr[0] + ':' +str(addr[1])
-	
-	start_new_thread(clientthread, (conn,))
-	
+	flag_record=	GPIO.input(record)
+
 s.close()
