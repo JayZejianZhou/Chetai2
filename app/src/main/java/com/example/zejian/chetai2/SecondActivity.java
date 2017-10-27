@@ -48,9 +48,14 @@ public class SecondActivity extends AppCompatActivity{
 
     //variables for socket connection
     private TextView textResponse;
+    private TextView textProgress;
     private EditText editTextAddress, editTextPort;
     public boolean mConnect=true;
     private Button Button_connect;
+
+    private Command_process mSocket;
+
+    private boolean flag_new_message=false;//A flag to show if there's a new message
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults){
@@ -220,7 +225,8 @@ public class SecondActivity extends AppCompatActivity{
         editTextAddress = (EditText)findViewById(R.id.editText_ip);
         editTextPort = (EditText)findViewById(R.id.editText_port);
         textResponse = (TextView)findViewById(R.id.sample);
-        Button_connect= (Button)findViewById((R.id.button_connect));
+        Button_connect= (Button)findViewById(R.id.button_connect);
+        textProgress=(TextView)findViewById(R.id.TextView_progress);
 
     }
 
@@ -241,7 +247,7 @@ public class SecondActivity extends AppCompatActivity{
     }
 
     public void button_connect_click(View view){
-        socket_connect(mConnect);
+        socket_connect(true);
         if(mConnect){
             Button_connect.setText("Disconnect");
         }
@@ -251,6 +257,8 @@ public class SecondActivity extends AppCompatActivity{
         mConnect=!mConnect;
     }
 
+
+
     private void socket_connect(Boolean mConnect){
         MyClientTask  myClientTask =  new MyClientTask(
                 editTextAddress.getText().toString(),
@@ -258,10 +266,11 @@ public class SecondActivity extends AppCompatActivity{
         myClientTask.execute();
     }
 
-    public class MyClientTask extends AsyncTask<Void, Void, Void>{
+    public class MyClientTask extends AsyncTask<Void, Integer, Void>{
         String dstAddress;
         int dstPort;
         String response;
+//        int progress=0;//show progress
 
         MyClientTask(String addr, int port){
             dstAddress = addr;
@@ -270,23 +279,67 @@ public class SecondActivity extends AppCompatActivity{
 
         @Override
         protected Void doInBackground(Void... arg0){
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024);
+            byte[] buffer = new byte[1024];
+            int bytesRead;
             try{
                 Socket socket = new Socket(dstAddress,dstPort);
-                InputStream inputStream = socket.getInputStream();
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024);
-                byte[] buffer = new byte[1024];
-                int bytesRead;
-                while ((bytesRead= inputStream.read(buffer)) != -1){
-                    byteArrayOutputStream.write(buffer, 0, bytesRead);
+                /*First stage, let's try to build the connection
+                */
+                //Wait until socket is connected
+                while(true){
+                    if(socket.isConnected()){
+                        publishProgress(1);
+                        break;
+                    }
                 }
-                socket.close();
-                response = byteArrayOutputStream.toString("UTF-8");
+                //wait for response from the server, double check
+                InputStream inputStream = socket.getInputStream();
+                while(true){
+                    bytesRead=inputStream.read(buffer);
+                    if(buffer[0]=='C'){
+                        publishProgress(2);
+                        break;
+                    }
+                }
+                //Ok, now we establish socket connection and never let it go
+                while(true) {
+                    bytesRead = inputStream.read(buffer);
+//                    byteArrayOutputStream.write(buffer, 0, bytesRead);
+//                    response = byteArrayOutputStream.toString("UTF-8");
+//                    publishProgress(7);//test progress to see what we got
+                    if(buffer[0]=='R'){
+                        startRecording();//Let's fucking start recording
+                        publishProgress(3);
+                    }
+                    if(buffer[0]=='T'){
+                        stopRecording();
+                        publishProgress(4);
+                    }
+                }
             }catch (UnknownHostException e){
                 e.printStackTrace();
             }catch (IOException e){
                 e.printStackTrace();
             }
             return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... progresses){
+            switch (progresses[0]) {
+                case 1: textProgress.setText("Wait for connection response");
+                    break;
+                case 2: textProgress.setText("Connection established!");
+                    break;
+                case 7: textResponse.setText(response);//lst's see what do you got
+                    break;
+                case 3: textProgress.setText("Recording...");
+                    break;
+                case 4: textProgress.setText("Finished Recording");
+                    break;
+                default: textResponse.setText("What the fuck, eh? Fucking unknown progess Code. Fuck you!");
+            }
         }
 
         @Override
