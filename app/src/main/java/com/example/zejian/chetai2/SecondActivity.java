@@ -57,6 +57,8 @@ public class SecondActivity extends AppCompatActivity{
 
     private boolean flag_new_message=false;//A flag to show if there's a new message
 
+    private boolean flag_record_start=false;
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults){
         super.onRequestPermissionsResult(requestCode,permissions,grantResults);
@@ -89,13 +91,6 @@ public class SecondActivity extends AppCompatActivity{
         mPlayer = new MediaPlayer();
         mAudioManager.setMode(AudioManager.MODE_IN_CALL);
 
-//        //Establish A2DP connecttion
-      //  if(!mAudioManager.isBluetoothA2dpOn())
-       // mAudioManager.setBluetoothA2dpOn(true);
-//        mAudioManager.stopBluetoothSco();
-        //mAudioManager.setStreamSolo(AudioManager.STREAM_MUSIC,true);
-        //mAudioManager.setRouting(AudioManager.MODE_NORMAL,AudioManager.ROUTE_BLUETOOTH_A2DP,AudioManager.ROUTE_BLUETOOTH);
-        //mAudioManager.setBluetoothScoOn(true);
         try{
             mPlayer.setDataSource(mFileName);
             mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -110,7 +105,6 @@ public class SecondActivity extends AppCompatActivity{
     private void stopPlaying(){
         mPlayer.release();
         mPlayer = null;
-//        mAudioManager.setStreamSolo(AudioManager.STREAM_MUSIC,false);
     }
 
     private void startRecording(){
@@ -132,8 +126,6 @@ public class SecondActivity extends AppCompatActivity{
             return;
         }
 
-
-//        mAudioManager.stopBluetoothSco();
         mAudioManager.startBluetoothSco();//蓝牙录音的关键，启动SCO连接，耳机话筒才起作用
 
         registerReceiver(new BroadcastReceiver() {
@@ -147,7 +139,7 @@ public class SecondActivity extends AppCompatActivity{
                     mAudioManager.setBluetoothScoOn(true);  //打开SCO
                     Log.e(LOG_TAG, "Routing:" + mAudioManager.isBluetoothScoOn());
                     mAudioManager.setMode(AudioManager.STREAM_MUSIC);
-
+                    flag_record_start=true;
                     mRecorder.start();//开始录音
 //                    unregisterReceiver(this);  //别遗漏
                 }
@@ -172,14 +164,15 @@ public class SecondActivity extends AppCompatActivity{
             }
         }, new IntentFilter(AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED));
 
-
-//        mRecorder.start();
     }
 
     private void stopRecording(){
-        mRecorder.stop();
-        mRecorder.release();
-        mRecorder=null;
+        if(flag_record_start) {
+            mRecorder.stop();
+            mRecorder.release();
+            mRecorder = null;
+        }
+        flag_record_start=false;
 //        if(mAudioManager.isBluetoothScoOn()){
 //            mAudioManager.setBluetoothScoOn(false);
 //            mAudioManager.stopBluetoothSco();
